@@ -32,7 +32,7 @@ export const DelayStatistics: React.FC<DelayStatisticsProps> = ({
   const { data: delayData = [], isLoading, error } = useQuery({
   queryKey: ["delays"],
   queryFn: async () => {
-    const res = await axios.get("http://localhost:3000/api/inspections/stats/retards/plaque-unique");
+    const res = await axios.get("https://cta-api.onrender.com/api/inspections/stats/retards/plaque-unique");
     const raw = res.data;
 
     // Transforme l'objet en tableau pour BarChart

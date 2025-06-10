@@ -26,7 +26,7 @@ export const AgencyStatistics: React.FC<AgencyStatisticsProps> = ({ selectedPeri
   const { data: agencyRawData = [], isLoading, error } = useQuery<RawDataItem[]>({
     queryKey: ["agencyStats", selectedPeriod],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:3000/api/inspections/stats/periode", {
+      const res = await axios.get("https://cta-api.onrender.com/api/inspections/stats/periode", {
         params: {
           startDate: selectedPeriod.start,
           endDate: selectedPeriod.end,

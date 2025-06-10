@@ -23,7 +23,7 @@ export const VehicleSearch = () => {
   const handleSearch = async () => {
     try {
       const response = await axios.get<VehicleData[]>(
-        `http://localhost:3000/api/inspections/vehicles/${searchTerm.toUpperCase()}`
+        `https://cta-api.onrender.com/api/inspections/vehicles/${searchTerm.toUpperCase()}`
       );
       console.log("Données reçues de l'API :", response.data);
       const data = response.data[0];  // <-- prendre le premier élément
