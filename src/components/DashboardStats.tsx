@@ -1,43 +1,74 @@
-
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Car, AlertTriangle, CheckCircle } from "lucide-react";
 
 export const DashboardStats = () => {
-  const stats = [
+  const [stats, setStats] = useState({
+    total: 0,
+    month: 0,
+    day: 0,
+    delay: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [totalRes, monthRes, dayRes, delayRes] = await Promise.all([
+          axios.get("http://localhost:3000/api/inspections/stats/total-plates"),
+          axios.get("http://localhost:3000/api/inspections/stats/monthly"),
+          axios.get("http://localhost:3000/api/inspections/stats/daily"),
+          axios.get("http://localhost:3000/api/inspections/stats/total-retards")
+        ]);
+
+        setStats({
+          total: totalRes.data.total,
+          month: monthRes.data.count,
+          day: dayRes.data.count,
+          delay: delayRes.data.count
+        });
+      } catch (err) {
+        console.error("Erreur chargement stats", err);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const cards = [
     {
       title: "Total Véhicules",
-      value: "2,847",
+      value: stats.total.toLocaleString(),
       icon: Car,
       color: "text-blue-600",
       bgColor: "bg-blue-100"
     },
     {
-      title: "Contrôles ce Mois",
-      value: "156",
+      title: "CTA ce Mois",
+      value: stats.month.toLocaleString(),
       icon: Calendar,
       color: "text-green-600",
       bgColor: "bg-green-100"
     },
     {
-      title: "En Retard",
-      value: "423",
-      icon: AlertTriangle,
-      color: "text-red-600",
-      bgColor: "bg-red-100"
-    },
-    {
-      title: "À Jour",
-      value: "2,424",
+      title: "CTA Aujourd’hui",
+      value: stats.day.toLocaleString(),
       icon: CheckCircle,
       color: "text-emerald-600",
       bgColor: "bg-emerald-100"
+    },
+    {
+      title: "En Retard",
+      value: stats.delay.toLocaleString(),
+      icon: AlertTriangle,
+      color: "text-red-600",
+      bgColor: "bg-red-100"
     }
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      {stats.map((stat, index) => {
+      {cards.map((stat, index) => {
         const Icon = stat.icon;
         return (
           <Card key={index} className="transition-all duration-300 hover:shadow-lg hover:scale-105">

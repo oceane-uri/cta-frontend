@@ -1,45 +1,60 @@
-
 import React, { useState } from 'react';
+import axios, { AxiosError } from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
+type VehicleData = {
+  immatriculation: string;
+  typevehicule: string;
+  datevisite: string;   // nom exact venant de l'API
+  datevalidite: string;
+  agences: string | null;
+};
+
+type VehicleStatus = 'valide' | 'retard';
+type SearchResult = VehicleData & { statut: VehicleStatus } | 'not_found';
+
 export const VehicleSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResult, setSearchResult] = useState(null);
+  const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
 
-  // Simulated vehicle data
-  const vehicleDatabase = {
-    'AB-123-CD': {
-      immatriculation: 'AB-123-CD',
-      type: 'Voiture particulière',
-      dernierPassage: '2024-03-15',
-      dateValidite: '2026-03-15',
-      agence: 'CTA Paris Nord',
-      statut: 'valide'
-    },
-    'EF-456-GH': {
-      immatriculation: 'EF-456-GH',
-      type: 'Utilitaire',
-      dernierPassage: '2023-01-20',
-      dateValidite: '2025-01-20',
-      agence: 'CTA Lyon Centre',
-      statut: 'retard'
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get<VehicleData[]>(
+        `http://localhost:3000/api/inspections/vehicles/${searchTerm.toUpperCase()}`
+      );
+      console.log("Données reçues de l'API :", response.data);
+      const data = response.data[0];  // <-- prendre le premier élément
+
+      if (!data) {
+        setSearchResult('not_found');
+        return;
+      }
+
+      const isValid: VehicleStatus = new Date(data.datevalidite) >= new Date() ? 'valide' : 'retard';
+
+      setSearchResult({ ...data, statut: isValid });
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status === 404) {
+        setSearchResult('not_found');
+      } else {
+        console.error("Erreur lors de la recherche :", axiosError.message);
+        setSearchResult(null);
+      }
     }
   };
 
-  const handleSearch = () => {
-    const result = vehicleDatabase[searchTerm.toUpperCase()];
-    setSearchResult(result || 'not_found');
-  };
+  const formatDate = (isoDate: string): string =>
+    new Date(isoDate).toLocaleDateString('fr-FR');
 
-  const getStatusBadge = (statut) => {
-    if (statut === 'valide') {
-      return <Badge className="bg-green-100 text-green-800">À jour</Badge>;
-    }
-    return <Badge className="bg-red-100 text-red-800">En retard</Badge>;
-  };
+  const getStatusBadge = (statut: VehicleStatus) => (
+    <Badge className={statut === 'valide' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+      {statut === 'valide' ? 'À jour' : 'En retard'}
+    </Badge>
+  );
 
   return (
     <div className="space-y-6">
@@ -78,7 +93,7 @@ export const VehicleSearch = () => {
                       </div>
                       <div>
                         <span className="font-semibold">Type de véhicule:</span>
-                        <p>{searchResult.type}</p>
+                        <p>{searchResult.typevehicule}</p>
                       </div>
                       <div>
                         <span className="font-semibold">Statut:</span>
@@ -88,15 +103,15 @@ export const VehicleSearch = () => {
                     <div className="space-y-2">
                       <div>
                         <span className="font-semibold">Dernier passage:</span>
-                        <p>{searchResult.dernierPassage}</p>
+                        <p>{formatDate(searchResult.datevisite)}</p>
                       </div>
                       <div>
                         <span className="font-semibold">Date de validité:</span>
-                        <p>{searchResult.dateValidite}</p>
+                        <p>{formatDate(searchResult.datevalidite)}</p>
                       </div>
                       <div>
                         <span className="font-semibold">Agence:</span>
-                        <p>{searchResult.agence}</p>
+                        <p>{searchResult.agences || 'Non renseignée'}</p>
                       </div>
                     </div>
                   </div>

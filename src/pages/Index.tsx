@@ -28,7 +28,7 @@ const Index = () => {
         {/* Statistics Overview */}
         <DashboardStats />
 
-        {/* Period Filter */}
+        {/* Period Filter
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Filtres de Période</CardTitle>
@@ -39,14 +39,14 @@ const Index = () => {
           <CardContent>
             <PeriodFilter onPeriodChange={setSelectedPeriod} />
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="statistics" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="statistics">Statistiques</TabsTrigger>
             <TabsTrigger value="search">Recherche</TabsTrigger>
-            <TabsTrigger value="vehicles">Véhicules</TabsTrigger>
+            {/* <TabsTrigger value="vehicles">Véhicules</TabsTrigger> */}
             <TabsTrigger value="agencies">Agences</TabsTrigger>
           </TabsList>
 
@@ -58,12 +58,12 @@ const Index = () => {
             <VehicleSearch />
           </TabsContent>
 
-          <TabsContent value="vehicles" className="space-y-6">
+          {/* <TabsContent value="vehicles" className="space-y-6">
             <VehicleList />
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="agencies" className="space-y-6">
-            <AgencyStatistics selectedPeriod={selectedPeriod} />
+             <AgencyStatistics selectedPeriod={selectedPeriod} setSelectedPeriod={setSelectedPeriod} />
           </TabsContent>
         </Tabs>
       </div>
