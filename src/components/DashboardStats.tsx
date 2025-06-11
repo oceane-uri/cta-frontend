@@ -15,10 +15,10 @@ export const DashboardStats = () => {
     const fetchStats = async () => {
       try {
         const [totalRes, monthRes, dayRes, delayRes] = await Promise.all([
-          axios.get("https://cta-api.onrender.com/api/inspections/stats/total-plates"),
-          axios.get("https://cta-api.onrender.com/api/inspections/stats/monthly"),
-          axios.get("https://cta-api.onrender.com/api/inspections/stats/daily"),
-          axios.get("https://cta-api.onrender.com/api/inspections/stats/total-retards")
+          axios.get("http://localhost:3000/api/inspections/stats/total-plates"),
+          axios.get("http://localhost:3000/api/inspections/stats/monthly"),
+          axios.get("http://localhost:3000/api/inspections/stats/daily"),
+          axios.get("http://localhost:3000/api/inspections/stats/total-retards")
         ]);
 
         setStats({
